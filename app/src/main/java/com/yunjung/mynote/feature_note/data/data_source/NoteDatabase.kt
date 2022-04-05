@@ -9,5 +9,5 @@ import com.yunjung.mynote.feature_note.domain.model.Note
     version = 1
 )
 abstract class NoteDatabase : RoomDatabase() {
-    abstract val noteDeo : NoteDeo
+    abstract val noteDao : NoteDao
 }

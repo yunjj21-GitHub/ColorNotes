@@ -5,7 +5,7 @@ import com.yunjung.mynote.feature_note.domain.model.Note
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface NoteDeo {
+interface NoteDao {
     @Query("SELECT * FROM note")
     fun getNotes() : Flow<List<Note>>
 
