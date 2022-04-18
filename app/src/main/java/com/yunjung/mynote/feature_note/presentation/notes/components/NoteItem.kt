@@ -63,7 +63,7 @@ fun NoteItem(
         }
         Column(
             modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxSize()
                 .padding(16.dp)
                 .padding(end = 32.dp)
         ) {
@@ -72,7 +72,6 @@ fun NoteItem(
                 style = MaterialTheme.typography.h6,
                 color = MaterialTheme.colors.onSurface,
                 maxLine = 1,
-                overLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
             Spacer(modifier = Modifier.height(8.dp))
