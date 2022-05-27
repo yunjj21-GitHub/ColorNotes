@@ -34,27 +34,28 @@ class NotesViewModel @Inject constructor(
 
     fun onEvent(event: NotesEvent){
         when(event){
-            is NotesEvent.Order -> {
+            is NotesEvent.Order -> { // 정렬 이벤트 발생시
                 if(state.value.noteOrder::class == event.noteOrder::class &&
                         state.value.noteOrder.orderType == event.noteOrder.orderType
-                ){
+                ){ // 정렬기준과 정렬방식이 이전과 동일하다면
                     return
                 }
+                // 새로이 정렬된 메모 리스트를 가져온다.
                 getNotes(event.noteOrder)
             }
-            is NotesEvent.DeleteNote -> {
+            is NotesEvent.DeleteNote -> { // 메모 삭제 이벤트 발생시
                 viewModelScope.launch {
                     noteUseCases.deleteNote(event.note)
-                    recentlyDeletedNote = event.note
+                    recentlyDeletedNote = event.note // 최근 삭제된 메모정보 갱신
                 }
             }
-            is NotesEvent.RestoreNote->{
+            is NotesEvent.RestoreNote->{ // 메모 복구 이벤트 발생시
                 viewModelScope.launch {
                     noteUseCases.addNote(recentlyDeletedNote ?: return@launch)
-                    recentlyDeletedNote = null
+                    recentlyDeletedNote = null // 최근 삭제된 메모정보를 비운다.
                 }
             }
-            is NotesEvent.ToggleOrderSection->{
+            is NotesEvent.ToggleOrderSection->{ // 정렬 아이콘 클릭 이벤트 발생시
                 _state.value = state.value.copy(
                     isOrderSectionVisible = !state.value.isOrderSectionVisible
                 )

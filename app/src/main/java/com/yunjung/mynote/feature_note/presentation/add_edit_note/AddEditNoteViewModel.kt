@@ -23,35 +23,14 @@ class AddEditNoteViewModel @Inject constructor(
     savedStateHandle : SavedStateHandle
 ) : ViewModel(){
     private val _noteTitle = mutableStateOf(NoteTextFieldState(
-        hint = "Enter title..."
+        hint = "제목을 입력해 주세요."
     ))
     val noteTitle : State<NoteTextFieldState> = _noteTitle
 
     private val _noteContent = mutableStateOf(NoteTextFieldState(
-        hint = "Enter some content..."
+        hint = "내용을 입력해 주세요."
     ))
     val noteContent : State<NoteTextFieldState> = _noteContent
-
-    init{
-        savedStateHandle.get<Int>("noteId")?.let { noteId ->
-            if(noteId != -1){
-                viewModelScope.launch {
-                    noteUseCases.getNote(noteId) ?.also { note ->
-                        currentNoteId = note.id
-                        _noteTitle.value = noteTitle.value.copy(
-                            text = note.title,
-                            isHintVisible = false
-                        )
-                        _noteContent.value = noteContent.value.copy(
-                            text = note.content,
-                            isHintVisible = false
-                        )
-                        _noteColor.value = note.color
-                    }
-                }
-            }
-        }
-    }
 
     private val _noteColor = mutableStateOf(Note.noteColors.random().toArgb())
     val noteColor : State<Int> = _noteColor
@@ -60,6 +39,35 @@ class AddEditNoteViewModel @Inject constructor(
     val eventFlow = _eventFlow.asSharedFlow()
 
     private var currentNoteId : Int? = null
+
+    sealed class UiEvent{
+        data class ShowSnackbar(val message : String) : UiEvent()
+        object SaveNote : UiEvent()
+    }
+
+    init{
+        savedStateHandle.get<Int>("noteId")?.let { noteId ->
+            if(noteId != -1){
+                viewModelScope.launch {
+                    noteUseCases.getNote(noteId) ?.also { note ->
+                        currentNoteId = note.id
+
+                        _noteTitle.value = noteTitle.value.copy(
+                            text = note.title,
+                            isHintVisible = false
+                        )
+
+                        _noteContent.value = noteContent.value.copy(
+                            text = note.content,
+                            isHintVisible = false
+                        )
+
+                        _noteColor.value = note.color
+                    }
+                }
+            }
+        }
+    }
 
     fun onEvent(event :AddEditNoteEvent){
         when(event) {
@@ -104,17 +112,12 @@ class AddEditNoteViewModel @Inject constructor(
                     }catch (e : InvalidNoteException){
                         _eventFlow.emit(
                             UiEvent.ShowSnackbar(
-                                message = e.message ?: "Couldn't save note"
+                                message = e.message ?: "메모를 저장하지 못했습니다."
                             )
                         )
                     }
                 }
             }
         }
-    }
-
-    sealed class UiEvent{
-        data class ShowSnackbar(val message : String) : UiEvent()
-        object SaveNote : UiEvent()
     }
 }

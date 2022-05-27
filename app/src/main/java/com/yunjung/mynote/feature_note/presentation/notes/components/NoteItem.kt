@@ -18,11 +18,15 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.clipPath
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.ColorUtils
 import com.yunjung.mynote.feature_note.domain.model.Note
+import com.yunjung.mynote.ui.theme.MyNoteTheme
+import com.yunjung.mynote.ui.theme.RedOrange
 
 @Composable
 fun NoteItem(
@@ -35,6 +39,7 @@ fun NoteItem(
     Box(
         modifier = modifier
     ){
+        // 메모지의 모양을 정의
         Canvas(modifier = Modifier.matchParentSize()){
             val clipPath = Path().apply {
                 lineTo(size.width - cutCornerSize.toPx(), 0f)
@@ -62,36 +67,50 @@ fun NoteItem(
                 )
             }
         }
+        // 메모지에 담길 제목, 내용, 삭제하기 버튼 등을 정의
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(16.dp)
                 .padding(end = 32.dp)
         ) {
+            // Title
             Text(
                 text = note.title,
                 style = MaterialTheme.typography.h6,
                 color = MaterialTheme.colors.onSurface,
-                maxLine = 1,
+                maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
             Spacer(modifier = Modifier.height(8.dp))
+            // Content
             Text(
                 text = note.content ,
                 style = MaterialTheme.typography.body1 ,
                 color = MaterialTheme.colors.onSurface ,
-                maxLine = 10 ,
+                maxLines = 10 ,
                 overflow = TextOverflow.Ellipsis
             )
         }
+        // 삭제하기 버튼
         IconButton(
             onClick = onDeleteClick,
             modifier = Modifier.align(Alignment.BottomEnd)
         ) {
             Icon(
                 imageVector =  Icons.Default.Delete,
-                contentDescription = "Delete note"
+                contentDescription = "Delete note",
+                tint = MaterialTheme.colors.onSurface
             )
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun NoteItemPreview(){
+    val note = Note(id = 1, title = "타이틀", content = "내용", timestamp = 0, color = RedOrange.toArgb())
+    MyNoteTheme {
+        NoteItem(note = note, onDeleteClick = {})
     }
 }

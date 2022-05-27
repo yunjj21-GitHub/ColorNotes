@@ -19,11 +19,15 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.yunjung.mynote.feature_note.domain.model.Note
 import com.yunjung.mynote.feature_note.presentation.add_edit_note.components.TransparentHintTextField
+import com.yunjung.mynote.ui.theme.MyNoteTheme
+import com.yunjung.mynote.ui.theme.RedOrange
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -44,16 +48,32 @@ fun AddEditNoteScreen(
         )
     }
     val scope = rememberCoroutineScope()
+
+    LaunchedEffect(key1 = true){
+        viewModel.eventFlow.collectLatest { event ->
+            when(event){
+                is AddEditNoteViewModel.UiEvent.ShowSnackbar -> {
+                    scaffoldState.snackbarHostState.showSnackbar(
+                        message = event.message
+                    )
+                }
+                is AddEditNoteViewModel.UiEvent.SaveNote -> {
+                    navController.navigateUp()
+                }
+            }
+        }
+    }
     
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                viewModel.onEvent(AddEditNoteEvent.SaveNote)
-            },
-            backgroundColor = MaterialTheme.colors.primary
-                ) {
-                Icon(imageVector = Icons.Default.Save , contentDescription = "Save note")
+                    // FloatingActionButton 클릭 이벤트 (메모 저장)
+                    viewModel.onEvent(AddEditNoteEvent.SaveNote)
+                },
+                backgroundColor = MaterialTheme.colors.primary
+            ) {
+                Icon(imageVector = Icons.Default.Save , contentDescription = "SaveNote")
             }
         },
         scaffoldState = scaffoldState
@@ -64,6 +84,7 @@ fun AddEditNoteScreen(
                 .background(noteBackgroundAnimatable.value)
                 .padding(16.dp)
         ){
+            // 메모 색상 선택
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -86,6 +107,7 @@ fun AddEditNoteScreen(
                                 shape = CircleShape
                             )
                             .clickable {
+                                // 메모 색상 클릭 이벤트
                                 scope.launch {
                                     noteBackgroundAnimatable.animateTo(
                                         targetValue = Color(colorInt) ,
@@ -96,8 +118,7 @@ fun AddEditNoteScreen(
                                 }
                                 viewModel.onEvent(AddEditNoteEvent.ChangeColor(colorInt))
                             }
-                        ){
-                    }
+                        )
                 }
             }
             Spacer(modifier = Modifier.height(16.dp))
@@ -129,5 +150,13 @@ fun AddEditNoteScreen(
                 modifier = Modifier.fillMaxHeight()
             )
         }
+    }
+}
+
+@Preview
+@Composable
+fun AddEditNoteScreenPreview(){
+    MyNoteTheme {
+
     }
 }

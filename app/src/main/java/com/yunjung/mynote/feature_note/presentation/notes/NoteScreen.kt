@@ -18,11 +18,12 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.yunjung.mynote.feature_note.presentation.notes.components.NoteItem
 import com.yunjung.mynote.feature_note.presentation.notes.components.OrderSection
+import com.yunjung.mynote.feature_note.presentation.util.Screen
 import kotlinx.coroutines.launch
 
 @ExperimentalAnimationApi
 @Composable
-fun NoteScreen(
+fun NotesScreen(
     navController: NavController,
     viewModel : NotesViewModel = hiltViewModel()
 ) {
@@ -30,32 +31,37 @@ fun NoteScreen(
     val scaffoldState = rememberScaffoldState()
     val scope = rememberCoroutineScope()
 
-    Scaffold(floatingActionButton = {
-        FloatingActionButton(onClick = {
-
+    Scaffold(
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = {
+                    // FloatingActionButton 클릭 이벤트 (AddEditNoteScreen으로 이동)
+                    navController.navigate(Screen.AddEditNoteScreen.route)
+                },
+                backgroundColor = MaterialTheme.colors.primary
+            ) {
+                Icon(imageVector = Icons.Default.Add , contentDescription = "Add note")
+            }
         },
-        backgroundColor = MaterialTheme.colors.primary
-        ) {
-            Icon(imageVector = Icons.Default.Add , contentDescription = "Add note")
-        }
-    },
         scaffoldState = scaffoldState
-
     ) {
         Column(
             modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
+                .fillMaxSize()
+                .padding(16.dp)
         ) {
+            // 화면의 상단 부
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ){
+                // Title
                 Text(
-                    text = "Your note",
+                    text = "메모장",
                     style = MaterialTheme.typography.h4
                 )
+                // Sort Menu Icon
                 IconButton(
                     onClick = {
                         viewModel.onEvent(NotesEvent.ToggleOrderSection)
@@ -67,6 +73,7 @@ fun NoteScreen(
                     )
                 }
             }
+            // Sort Menu
             AnimatedVisibility(
                 visible = state.isOrderSectionVisible,
                 enter = fadeIn() + slideInVertically(),
@@ -83,6 +90,8 @@ fun NoteScreen(
                 )
             }
             Spacer(modifier = Modifier.height(16.dp))
+
+            // Notes List
             LazyColumn(modifier = Modifier.fillMaxSize()){
                 items(state.notes){ note ->
                     NoteItem(
@@ -90,15 +99,20 @@ fun NoteScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clickable {
-
+                                // NoteItem 클릭 이벤트 (AddEditNoteScreen으로 이동)
+                                navController.navigate(Screen.AddEditNoteScreen.route
+                                        + "?noteId=${note.id}&noteColor=${note.color}")
                             },
                         onDeleteClick = {
+                            // 삭제하기 버튼 클릭 이벤트
                             viewModel.onEvent(NotesEvent.DeleteNote(note))
                             scope.launch {
+                                // 스낵바를 띄운다.
                                 val result = scaffoldState.snackbarHostState.showSnackbar(
-                                    message = "Note deleted",
-                                    actionLabel = "Undo"
+                                    message = "메모가 삭제되었습니다.",
+                                    actionLabel = "되돌리기"
                                 )
+                                // 스낵바의 되돌리기 버튼 클릭시
                                 if(result == SnackbarResult.ActionPerformed){
                                     viewModel.onEvent(NotesEvent.RestoreNote)
                                 }
