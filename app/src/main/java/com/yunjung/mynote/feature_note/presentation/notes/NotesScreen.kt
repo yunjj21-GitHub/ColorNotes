@@ -58,7 +58,7 @@ fun NotesScreen(
             ){
                 // Title
                 Text(
-                    text = "메모장",
+                    text = "Your notes ✨",
                     style = MaterialTheme.typography.h4
                 )
                 // Sort Menu Icon
@@ -109,8 +109,8 @@ fun NotesScreen(
                             scope.launch {
                                 // 스낵바를 띄운다.
                                 val result = scaffoldState.snackbarHostState.showSnackbar(
-                                    message = "메모가 삭제되었습니다.",
-                                    actionLabel = "되돌리기"
+                                    message = "Note deleted",
+                                    actionLabel = "Undo"
                                 )
                                 // 스낵바의 되돌리기 버튼 클릭시
                                 if(result == SnackbarResult.ActionPerformed){

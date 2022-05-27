@@ -23,12 +23,12 @@ class AddEditNoteViewModel @Inject constructor(
     savedStateHandle : SavedStateHandle
 ) : ViewModel(){
     private val _noteTitle = mutableStateOf(NoteTextFieldState(
-        hint = "제목을 입력해 주세요."
+        hint = "Enter title..."
     ))
     val noteTitle : State<NoteTextFieldState> = _noteTitle
 
     private val _noteContent = mutableStateOf(NoteTextFieldState(
-        hint = "내용을 입력해 주세요."
+        hint = "Enter some content"
     ))
     val noteContent : State<NoteTextFieldState> = _noteContent
 
@@ -112,7 +112,7 @@ class AddEditNoteViewModel @Inject constructor(
                     }catch (e : InvalidNoteException){
                         _eventFlow.emit(
                             UiEvent.ShowSnackbar(
-                                message = e.message ?: "메모를 저장하지 못했습니다."
+                                message = e.message ?: "Couldn't save note"
                             )
                         )
                     }
