@@ -3,11 +3,12 @@
 ### 📌 Tech Stack Used
 * Android
 * Kotlin
+* SQLite
 * Git
 
 ### 📌 Architecture used
-* Clean Architect
 * MVVM
+* Clean Architect
 
 ### 📌 Library used
 * Jetpack Compose
